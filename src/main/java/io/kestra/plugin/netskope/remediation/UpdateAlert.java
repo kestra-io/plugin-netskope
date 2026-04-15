@@ -57,12 +57,12 @@ public class UpdateAlert extends Task implements RunnableTask<UpdateAlert.Output
 
     @Schema(title = "The base URL of the Netskope tenant", description = "e.g. https://tenant.goskope.com")
     @NotNull
-    @PluginProperty(group = "connection")
+    @PluginProperty(group = "main")
     private Property<String> baseUrl;
 
     @Schema(title = "The Netskope v2 API token")
     @NotNull
-    @PluginProperty(group = "connection")
+    @PluginProperty(group = "main")
     private Property<String> apiToken;
 
     @Schema(title = "The ID of the alert to update")

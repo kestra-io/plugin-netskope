@@ -60,12 +60,12 @@ public class GetAlerts extends Task implements RunnableTask<GetAlerts.Output> {
 
     @Schema(title = "The base URL of the Netskope tenant", description = "e.g. https://tenant.goskope.com")
     @NotNull
-    @PluginProperty(group = "connection")
+    @PluginProperty(group = "main")
     private Property<String> baseUrl;
 
     @Schema(title = "The Netskope v2 API token")
     @NotNull
-    @PluginProperty(group = "connection")
+    @PluginProperty(group = "main")
     private Property<String> apiToken;
 
     @Schema(title = "The alert type to retrieve", description = "e.g. malware, dlp, policy, compromised-credentials, etc.")

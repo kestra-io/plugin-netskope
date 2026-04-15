@@ -61,12 +61,12 @@ public class AuditLogs extends Task implements RunnableTask<AuditLogs.Output> {
 
     @Schema(title = "The base URL of the Netskope tenant", description = "e.g. https://tenant.goskope.com")
     @NotNull
-    @PluginProperty(group = "connection")
+    @PluginProperty(group = "main")
     private Property<String> baseUrl;
 
     @Schema(title = "The Netskope v2 API token")
     @NotNull
-    @PluginProperty(group = "connection")
+    @PluginProperty(group = "main")
     private Property<String> apiToken;
 
     @Schema(title = "Lookback period for audit logs", description = "When set, appends ?starttime=<epoch> computed as Instant.now().minus(lookbackPeriod). ISO-8601 duration e.g. PT24H")
