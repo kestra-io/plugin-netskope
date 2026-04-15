@@ -24,9 +24,9 @@ class AuditLogsTest {
     @Test
     void run() throws Exception {
         var task = AuditLogs.builder()
-            .rBaseUrl(Property.ofExpression("{{ envs.NETSKOPE_BASE_URL }}"))
-            .rApiToken(Property.ofExpression("{{ envs.NETSKOPE_API_TOKEN }}"))
-            .rLookbackPeriod(Property.ofValue(Duration.ofHours(24)))
+            .baseUrl(Property.ofExpression("{{ envs.NETSKOPE_BASE_URL }}"))
+            .apiToken(Property.ofExpression("{{ envs.NETSKOPE_API_TOKEN }}"))
+            .lookbackPeriod(Property.ofValue(Duration.ofHours(24)))
             .build();
         var ctx = runContextFactory.of(Map.of());
         var output = task.run(ctx);

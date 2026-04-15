@@ -44,10 +44,10 @@ import java.util.Map;
                 tasks:
                   - id: deactivate_user
                     type: io.kestra.plugin.netskope.scim.ManageUser
-                    rBaseUrl: "https://{{ secret('NETSKOPE_TENANT') }}.goskope.com"
-                    rScimToken: "{{ secret('NETSKOPE_SCIM_TOKEN') }}"
-                    rUserId: "{{ inputs.user_id }}"
-                    rActive: false
+                    baseUrl: "https://{{ secret('NETSKOPE_TENANT') }}.goskope.com"
+                    scimToken: "{{ secret('NETSKOPE_SCIM_TOKEN') }}"
+                    userId: "{{ inputs.user_id }}"
+                    active: false
                 """
         )
     }
@@ -57,31 +57,31 @@ public class ManageUser extends Task implements RunnableTask<ManageUser.Output> 
     @Schema(title = "The base URL of the Netskope tenant", description = "e.g. https://tenant.goskope.com")
     @NotNull
     @PluginProperty(group = "connection")
-    private Property<String> rBaseUrl;
+    private Property<String> baseUrl;
 
     @Schema(title = "The SCIM Bearer token for authentication")
     @NotNull
     @PluginProperty(group = "connection")
-    private Property<String> rScimToken;
+    private Property<String> scimToken;
 
     @Schema(title = "The SCIM user ID to update")
     @NotNull
     @PluginProperty(group = "main")
-    private Property<String> rUserId;
+    private Property<String> userId;
 
     @Schema(title = "Whether the user should be active or inactive")
     @NotNull
     @PluginProperty(group = "main")
-    private Property<Boolean> rActive;
+    private Property<Boolean> active;
 
     @Override
     public Output run(RunContext runContext) throws Exception {
-        String baseUrlVal = runContext.render(this.rBaseUrl).as(String.class).orElseThrow();
-        String scimTokenVal = runContext.render(this.rScimToken).as(String.class).orElseThrow();
-        String userIdVal = runContext.render(this.rUserId).as(String.class).orElseThrow();
-        boolean activeVal = runContext.render(this.rActive).as(Boolean.class).orElseThrow();
+        String rBaseUrl = runContext.render(this.baseUrl).as(String.class).orElseThrow();
+        String rScimToken = runContext.render(this.scimToken).as(String.class).orElseThrow();
+        String rUserId = runContext.render(this.userId).as(String.class).orElseThrow();
+        boolean rActive = runContext.render(this.active).as(Boolean.class).orElseThrow();
 
-        String url = baseUrlVal + "/scim/Users/" + userIdVal;
+        String url = rBaseUrl + "/scim/Users/" + rUserId;
 
         Map<String, Object> requestBody = Map.of(
             "schemas", List.of("urn:ietf:params:scim:api:messages:2.0:PatchOp"),
@@ -89,7 +89,7 @@ public class ManageUser extends Task implements RunnableTask<ManageUser.Output> 
                 Map.of(
                     "op", "replace",
                     "path", "active",
-                    "value", activeVal
+                    "value", rActive
                 )
             )
         );
@@ -98,7 +98,7 @@ public class ManageUser extends Task implements RunnableTask<ManageUser.Output> 
             var httpRequest = HttpRequest.builder()
                 .uri(URI.create(url))
                 .method("PATCH")
-                .addHeader("Authorization", "Bearer " + scimTokenVal)
+                .addHeader("Authorization", "Bearer " + rScimToken)
                 .addHeader("Content-Type", "application/json")
                 .body(HttpRequest.JsonRequestBody.builder().content(requestBody).build())
                 .build();
@@ -108,8 +108,8 @@ public class ManageUser extends Task implements RunnableTask<ManageUser.Output> 
             }
 
             return Output.builder()
-                .userId(userIdVal)
-                .active(activeVal)
+                .userId(rUserId)
+                .active(rActive)
                 .build();
         }
     }

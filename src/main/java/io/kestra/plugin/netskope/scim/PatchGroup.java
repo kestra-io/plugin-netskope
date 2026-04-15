@@ -44,11 +44,11 @@ import java.util.Map;
                 tasks:
                   - id: add_member
                     type: io.kestra.plugin.netskope.scim.PatchGroup
-                    rBaseUrl: "https://{{ secret('NETSKOPE_TENANT') }}.goskope.com"
-                    rScimToken: "{{ secret('NETSKOPE_SCIM_TOKEN') }}"
-                    rGroupId: "{{ inputs.group_id }}"
-                    rOperation: ADD
-                    rMemberEmail: "user@example.com"
+                    baseUrl: "https://{{ secret('NETSKOPE_TENANT') }}.goskope.com"
+                    scimToken: "{{ secret('NETSKOPE_SCIM_TOKEN') }}"
+                    groupId: "{{ inputs.group_id }}"
+                    operation: ADD
+                    memberEmail: "user@example.com"
                 """
         )
     }
@@ -58,39 +58,39 @@ public class PatchGroup extends Task implements RunnableTask<PatchGroup.Output> 
     @Schema(title = "The base URL of the Netskope tenant", description = "e.g. https://tenant.goskope.com")
     @NotNull
     @PluginProperty(group = "connection")
-    private Property<String> rBaseUrl;
+    private Property<String> baseUrl;
 
     @Schema(title = "The SCIM Bearer token for authentication")
     @NotNull
     @PluginProperty(group = "connection")
-    private Property<String> rScimToken;
+    private Property<String> scimToken;
 
     @Schema(title = "The SCIM group ID to update")
     @NotNull
     @PluginProperty(group = "main")
-    private Property<String> rGroupId;
+    private Property<String> groupId;
 
     @Schema(title = "The operation to perform on group membership", description = "Must be 'ADD' or 'REMOVE'")
     @NotNull
     @PluginProperty(group = "main")
-    private Property<String> rOperation;
+    private Property<String> operation;
 
     @Schema(title = "The email address of the member to add or remove")
     @NotNull
     @PluginProperty(group = "main")
-    private Property<String> rMemberEmail;
+    private Property<String> memberEmail;
 
     @Override
     public Output run(RunContext runContext) throws Exception {
-        String baseUrlVal = runContext.render(this.rBaseUrl).as(String.class).orElseThrow();
-        String scimTokenVal = runContext.render(this.rScimToken).as(String.class).orElseThrow();
-        String groupIdVal = runContext.render(this.rGroupId).as(String.class).orElseThrow();
-        String operationVal = runContext.render(this.rOperation).as(String.class).orElseThrow();
-        String memberEmailVal = runContext.render(this.rMemberEmail).as(String.class).orElseThrow();
+        String rBaseUrl = runContext.render(this.baseUrl).as(String.class).orElseThrow();
+        String rScimToken = runContext.render(this.scimToken).as(String.class).orElseThrow();
+        String rGroupId = runContext.render(this.groupId).as(String.class).orElseThrow();
+        String rOperation = runContext.render(this.operation).as(String.class).orElseThrow();
+        String rMemberEmail = runContext.render(this.memberEmail).as(String.class).orElseThrow();
 
-        String url = baseUrlVal + "/scim/Groups/" + groupIdVal;
+        String url = rBaseUrl + "/scim/Groups/" + rGroupId;
 
-        String op = operationVal.equalsIgnoreCase("ADD") ? "add" : "remove";
+        String op = rOperation.equalsIgnoreCase("ADD") ? "add" : "remove";
 
         Map<String, Object> requestBody = Map.of(
             "schemas", List.of("urn:ietf:params:scim:api:messages:2.0:PatchOp"),
@@ -98,7 +98,7 @@ public class PatchGroup extends Task implements RunnableTask<PatchGroup.Output> 
                 Map.of(
                     "op", op,
                     "path", "members",
-                    "value", List.of(Map.of("display", memberEmailVal))
+                    "value", List.of(Map.of("display", rMemberEmail))
                 )
             )
         );
@@ -107,7 +107,7 @@ public class PatchGroup extends Task implements RunnableTask<PatchGroup.Output> 
             var httpRequest = HttpRequest.builder()
                 .uri(URI.create(url))
                 .method("PATCH")
-                .addHeader("Authorization", "Bearer " + scimTokenVal)
+                .addHeader("Authorization", "Bearer " + rScimToken)
                 .addHeader("Content-Type", "application/json")
                 .body(HttpRequest.JsonRequestBody.builder().content(requestBody).build())
                 .build();
@@ -117,8 +117,8 @@ public class PatchGroup extends Task implements RunnableTask<PatchGroup.Output> 
             }
 
             return Output.builder()
-                .groupId(groupIdVal)
-                .operation(operationVal)
+                .groupId(rGroupId)
+                .operation(rOperation)
                 .build();
         }
     }

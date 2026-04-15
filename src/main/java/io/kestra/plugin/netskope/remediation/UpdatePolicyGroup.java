@@ -43,11 +43,11 @@ import java.util.Map;
                 tasks:
                   - id: block_url
                     type: io.kestra.plugin.netskope.remediation.UpdatePolicyGroup
-                    rBaseUrl: "https://{{ secret('NETSKOPE_TENANT') }}.goskope.com"
-                    rApiToken: "{{ secret('NETSKOPE_V2_TOKEN') }}"
-                    rPolicyGroupId: "{{ inputs.policy_group_id }}"
-                    rOperation: ADD
-                    rEntity: "malicious-site.example.com"
+                    baseUrl: "https://{{ secret('NETSKOPE_TENANT') }}.goskope.com"
+                    apiToken: "{{ secret('NETSKOPE_V2_TOKEN') }}"
+                    policyGroupId: "{{ inputs.policy_group_id }}"
+                    operation: ADD
+                    entity: "malicious-site.example.com"
                 """
         )
     }
@@ -57,48 +57,48 @@ public class UpdatePolicyGroup extends Task implements RunnableTask<UpdatePolicy
     @Schema(title = "The base URL of the Netskope tenant", description = "e.g. https://tenant.goskope.com")
     @NotNull
     @PluginProperty(group = "connection")
-    private Property<String> rBaseUrl;
+    private Property<String> baseUrl;
 
     @Schema(title = "The Netskope v2 API token")
     @NotNull
     @PluginProperty(group = "connection")
-    private Property<String> rApiToken;
+    private Property<String> apiToken;
 
     @Schema(title = "The ID of the URL list policy group to update")
     @NotNull
     @PluginProperty(group = "main")
-    private Property<String> rPolicyGroupId;
+    private Property<String> policyGroupId;
 
     @Schema(title = "The operation to perform", description = "Must be 'ADD' or 'REMOVE'")
     @NotNull
     @PluginProperty(group = "main")
-    private Property<String> rOperation;
+    private Property<String> operation;
 
     @Schema(title = "The URL or entity to add or remove from the policy group")
     @NotNull
     @PluginProperty(group = "main")
-    private Property<String> rEntity;
+    private Property<String> entity;
 
     @Override
     public Output run(RunContext runContext) throws Exception {
-        String baseUrlVal = runContext.render(this.rBaseUrl).as(String.class).orElseThrow();
-        String apiTokenVal = runContext.render(this.rApiToken).as(String.class).orElseThrow();
-        String policyGroupIdVal = runContext.render(this.rPolicyGroupId).as(String.class).orElseThrow();
-        String operationVal = runContext.render(this.rOperation).as(String.class).orElseThrow();
-        String entityVal = runContext.render(this.rEntity).as(String.class).orElseThrow();
+        String rBaseUrl = runContext.render(this.baseUrl).as(String.class).orElseThrow();
+        String rApiToken = runContext.render(this.apiToken).as(String.class).orElseThrow();
+        String rPolicyGroupId = runContext.render(this.policyGroupId).as(String.class).orElseThrow();
+        String rOperation = runContext.render(this.operation).as(String.class).orElseThrow();
+        String rEntity = runContext.render(this.entity).as(String.class).orElseThrow();
 
-        String url = baseUrlVal + "/api/v2/policy/urllist/" + policyGroupIdVal;
+        String url = rBaseUrl + "/api/v2/policy/urllist/" + rPolicyGroupId;
 
         Map<String, Object> requestBody = Map.of(
-            "action", operationVal,
-            "url", entityVal
+            "action", rOperation,
+            "url", rEntity
         );
 
         try (var client = new HttpClient(runContext, HttpConfiguration.builder().build())) {
             var httpRequest = HttpRequest.builder()
                 .uri(URI.create(url))
                 .method("PUT")
-                .addHeader("Netskope-Api-Token", apiTokenVal)
+                .addHeader("Netskope-Api-Token", rApiToken)
                 .addHeader("Content-Type", "application/json")
                 .body(HttpRequest.JsonRequestBody.builder().content(requestBody).build())
                 .build();
@@ -108,8 +108,8 @@ public class UpdatePolicyGroup extends Task implements RunnableTask<UpdatePolicy
             }
 
             return Output.builder()
-                .policyGroupId(policyGroupIdVal)
-                .operation(operationVal)
+                .policyGroupId(rPolicyGroupId)
+                .operation(rOperation)
                 .build();
         }
     }

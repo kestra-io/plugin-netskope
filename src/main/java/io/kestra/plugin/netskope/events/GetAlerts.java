@@ -48,10 +48,10 @@ import java.util.Map;
                 tasks:
                   - id: fetch_alerts
                     type: io.kestra.plugin.netskope.events.GetAlerts
-                    rBaseUrl: "https://{{ secret('NETSKOPE_TENANT') }}.goskope.com"
-                    rApiToken: "{{ secret('NETSKOPE_V2_TOKEN') }}"
-                    rAlertType: malware
-                    rQuery: "alert_severity eq 'critical'"
+                    baseUrl: "https://{{ secret('NETSKOPE_TENANT') }}.goskope.com"
+                    apiToken: "{{ secret('NETSKOPE_V2_TOKEN') }}"
+                    alertType: malware
+                    query: "alert_severity eq 'critical'"
                 """
         )
     }
@@ -61,37 +61,37 @@ public class GetAlerts extends Task implements RunnableTask<GetAlerts.Output> {
     @Schema(title = "The base URL of the Netskope tenant", description = "e.g. https://tenant.goskope.com")
     @NotNull
     @PluginProperty(group = "connection")
-    private Property<String> rBaseUrl;
+    private Property<String> baseUrl;
 
     @Schema(title = "The Netskope v2 API token")
     @NotNull
     @PluginProperty(group = "connection")
-    private Property<String> rApiToken;
+    private Property<String> apiToken;
 
     @Schema(title = "The alert type to retrieve", description = "e.g. malware, dlp, policy, compromised-credentials, etc.")
     @PluginProperty(group = "main")
-    private Property<String> rAlertType;
+    private Property<String> alertType;
 
     @Schema(title = "Optional NRSQL query filter", description = "Added as the `query` query parameter")
     @PluginProperty(group = "processing")
-    private Property<String> rQuery;
+    private Property<String> query;
 
     @Override
     public Output run(RunContext runContext) throws Exception {
-        String baseUrlVal = runContext.render(this.rBaseUrl).as(String.class).orElseThrow();
-        String apiTokenVal = runContext.render(this.rApiToken).as(String.class).orElseThrow();
-        String alertTypeVal = this.rAlertType != null
-            ? runContext.render(this.rAlertType).as(String.class).orElse("malware")
+        String rBaseUrl = runContext.render(this.baseUrl).as(String.class).orElseThrow();
+        String rApiToken = runContext.render(this.apiToken).as(String.class).orElseThrow();
+        String rAlertType = this.alertType != null
+            ? runContext.render(this.alertType).as(String.class).orElse("malware")
             : "malware";
 
-        StringBuilder urlBuilder = new StringBuilder(baseUrlVal)
+        StringBuilder urlBuilder = new StringBuilder(rBaseUrl)
             .append("/api/v2/events/dataexport/alerts/")
-            .append(alertTypeVal);
+            .append(rAlertType);
 
-        if (this.rQuery != null) {
-            String queryVal = runContext.render(this.rQuery).as(String.class).orElse(null);
-            if (queryVal != null && !queryVal.isBlank()) {
-                urlBuilder.append("?query=").append(java.net.URLEncoder.encode(queryVal, java.nio.charset.StandardCharsets.UTF_8));
+        if (this.query != null) {
+            String rQuery = runContext.render(this.query).as(String.class).orElse(null);
+            if (rQuery != null && !rQuery.isBlank()) {
+                urlBuilder.append("?query=").append(java.net.URLEncoder.encode(rQuery, java.nio.charset.StandardCharsets.UTF_8));
             }
         }
 
@@ -101,7 +101,7 @@ public class GetAlerts extends Task implements RunnableTask<GetAlerts.Output> {
             var httpRequest = HttpRequest.builder()
                 .uri(URI.create(url))
                 .method("GET")
-                .addHeader("Netskope-Api-Token", apiTokenVal)
+                .addHeader("Netskope-Api-Token", rApiToken)
                 .build();
             HttpResponse<String> response = client.request(httpRequest, String.class);
             if (response.getStatus().getCode() >= 400) {

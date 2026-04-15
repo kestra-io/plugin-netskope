@@ -23,11 +23,11 @@ class UpdateAlertTest {
     @Test
     void run() throws Exception {
         var task = UpdateAlert.builder()
-            .rBaseUrl(Property.ofExpression("{{ envs.NETSKOPE_BASE_URL }}"))
-            .rApiToken(Property.ofExpression("{{ envs.NETSKOPE_API_TOKEN }}"))
-            .rAlertId(Property.ofExpression("{{ envs.NETSKOPE_ALERT_ID }}"))
-            .rStatus(Property.ofValue("acknowledged"))
-            .rNote(Property.ofValue("Reviewed by automated workflow"))
+            .baseUrl(Property.ofExpression("{{ envs.NETSKOPE_BASE_URL }}"))
+            .apiToken(Property.ofExpression("{{ envs.NETSKOPE_API_TOKEN }}"))
+            .alertId(Property.ofExpression("{{ envs.NETSKOPE_ALERT_ID }}"))
+            .status(Property.ofValue("acknowledged"))
+            .note(Property.ofValue("Reviewed by automated workflow"))
             .build();
         var ctx = runContextFactory.of(Map.of());
         var output = task.run(ctx);

@@ -44,11 +44,11 @@ import java.util.Map;
                 tasks:
                   - id: ack_alert
                     type: io.kestra.plugin.netskope.remediation.UpdateAlert
-                    rBaseUrl: "https://{{ secret('NETSKOPE_TENANT') }}.goskope.com"
-                    rApiToken: "{{ secret('NETSKOPE_V2_TOKEN') }}"
-                    rAlertId: "{{ inputs.alert_id }}"
-                    rStatus: acknowledged
-                    rNote: "Reviewed and acknowledged by SOC team"
+                    baseUrl: "https://{{ secret('NETSKOPE_TENANT') }}.goskope.com"
+                    apiToken: "{{ secret('NETSKOPE_V2_TOKEN') }}"
+                    alertId: "{{ inputs.alert_id }}"
+                    status: acknowledged
+                    note: "Reviewed and acknowledged by SOC team"
                 """
         )
     }
@@ -58,42 +58,42 @@ public class UpdateAlert extends Task implements RunnableTask<UpdateAlert.Output
     @Schema(title = "The base URL of the Netskope tenant", description = "e.g. https://tenant.goskope.com")
     @NotNull
     @PluginProperty(group = "connection")
-    private Property<String> rBaseUrl;
+    private Property<String> baseUrl;
 
     @Schema(title = "The Netskope v2 API token")
     @NotNull
     @PluginProperty(group = "connection")
-    private Property<String> rApiToken;
+    private Property<String> apiToken;
 
     @Schema(title = "The ID of the alert to update")
     @NotNull
     @PluginProperty(group = "main")
-    private Property<String> rAlertId;
+    private Property<String> alertId;
 
     @Schema(title = "The new status for the alert", description = "Must be 'acknowledged' or 'dismissed'")
     @NotNull
     @PluginProperty(group = "main")
-    private Property<String> rStatus;
+    private Property<String> status;
 
     @Schema(title = "Optional note to attach to the alert update")
     @PluginProperty(group = "advanced")
-    private Property<String> rNote;
+    private Property<String> note;
 
     @Override
     public Output run(RunContext runContext) throws Exception {
-        String baseUrlVal = runContext.render(this.rBaseUrl).as(String.class).orElseThrow();
-        String apiTokenVal = runContext.render(this.rApiToken).as(String.class).orElseThrow();
-        String alertIdVal = runContext.render(this.rAlertId).as(String.class).orElseThrow();
-        String statusVal = runContext.render(this.rStatus).as(String.class).orElseThrow();
+        String rBaseUrl = runContext.render(this.baseUrl).as(String.class).orElseThrow();
+        String rApiToken = runContext.render(this.apiToken).as(String.class).orElseThrow();
+        String rAlertId = runContext.render(this.alertId).as(String.class).orElseThrow();
+        String rStatus = runContext.render(this.status).as(String.class).orElseThrow();
 
-        String url = baseUrlVal + "/api/v2/events/alerts/" + alertIdVal;
+        String url = rBaseUrl + "/api/v2/events/alerts/" + rAlertId;
 
         Map<String, Object> requestBody = new LinkedHashMap<>();
-        requestBody.put("status", statusVal);
-        if (this.rNote != null) {
-            String noteVal = runContext.render(this.rNote).as(String.class).orElse(null);
-            if (noteVal != null) {
-                requestBody.put("note", noteVal);
+        requestBody.put("status", rStatus);
+        if (this.note != null) {
+            String rNote = runContext.render(this.note).as(String.class).orElse(null);
+            if (rNote != null) {
+                requestBody.put("note", rNote);
             }
         }
 
@@ -101,7 +101,7 @@ public class UpdateAlert extends Task implements RunnableTask<UpdateAlert.Output
             var httpRequest = HttpRequest.builder()
                 .uri(URI.create(url))
                 .method("PATCH")
-                .addHeader("Netskope-Api-Token", apiTokenVal)
+                .addHeader("Netskope-Api-Token", rApiToken)
                 .addHeader("Content-Type", "application/json")
                 .body(HttpRequest.JsonRequestBody.builder().content(requestBody).build())
                 .build();
@@ -111,8 +111,8 @@ public class UpdateAlert extends Task implements RunnableTask<UpdateAlert.Output
             }
 
             return Output.builder()
-                .alertId(alertIdVal)
-                .updatedStatus(statusVal)
+                .alertId(rAlertId)
+                .updatedStatus(rStatus)
                 .build();
         }
     }

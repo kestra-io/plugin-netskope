@@ -22,10 +22,10 @@ class ManageUserTest {
     @Test
     void run() throws Exception {
         var task = ManageUser.builder()
-            .rBaseUrl(Property.ofExpression("{{ envs.NETSKOPE_BASE_URL }}"))
-            .rScimToken(Property.ofExpression("{{ envs.NETSKOPE_SCIM_TOKEN }}"))
-            .rUserId(Property.ofExpression("{{ envs.NETSKOPE_SCIM_USER_ID }}"))
-            .rActive(Property.ofValue(false))
+            .baseUrl(Property.ofExpression("{{ envs.NETSKOPE_BASE_URL }}"))
+            .scimToken(Property.ofExpression("{{ envs.NETSKOPE_SCIM_TOKEN }}"))
+            .userId(Property.ofExpression("{{ envs.NETSKOPE_SCIM_USER_ID }}"))
+            .active(Property.ofValue(false))
             .build();
         var ctx = runContextFactory.of(Map.of());
         var output = task.run(ctx);

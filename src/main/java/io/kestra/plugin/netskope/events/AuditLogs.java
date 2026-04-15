@@ -50,9 +50,9 @@ import java.util.Map;
                 tasks:
                   - id: fetch_audit_logs
                     type: io.kestra.plugin.netskope.events.AuditLogs
-                    rBaseUrl: "https://{{ secret('NETSKOPE_TENANT') }}.goskope.com"
-                    rApiToken: "{{ secret('NETSKOPE_V2_TOKEN') }}"
-                    rLookbackPeriod: "PT24H"
+                    baseUrl: "https://{{ secret('NETSKOPE_TENANT') }}.goskope.com"
+                    apiToken: "{{ secret('NETSKOPE_V2_TOKEN') }}"
+                    lookbackPeriod: "PT24H"
                 """
         )
     }
@@ -62,29 +62,29 @@ public class AuditLogs extends Task implements RunnableTask<AuditLogs.Output> {
     @Schema(title = "The base URL of the Netskope tenant", description = "e.g. https://tenant.goskope.com")
     @NotNull
     @PluginProperty(group = "connection")
-    private Property<String> rBaseUrl;
+    private Property<String> baseUrl;
 
     @Schema(title = "The Netskope v2 API token")
     @NotNull
     @PluginProperty(group = "connection")
-    private Property<String> rApiToken;
+    private Property<String> apiToken;
 
     @Schema(title = "Lookback period for audit logs", description = "When set, appends ?starttime=<epoch> computed as Instant.now().minus(lookbackPeriod). ISO-8601 duration e.g. PT24H")
     @PluginProperty(group = "processing")
-    private Property<Duration> rLookbackPeriod;
+    private Property<Duration> lookbackPeriod;
 
     @Override
     public Output run(RunContext runContext) throws Exception {
-        String baseUrlVal = runContext.render(this.rBaseUrl).as(String.class).orElseThrow();
-        String apiTokenVal = runContext.render(this.rApiToken).as(String.class).orElseThrow();
+        String rBaseUrl = runContext.render(this.baseUrl).as(String.class).orElseThrow();
+        String rApiToken = runContext.render(this.apiToken).as(String.class).orElseThrow();
 
-        StringBuilder urlBuilder = new StringBuilder(baseUrlVal)
+        StringBuilder urlBuilder = new StringBuilder(rBaseUrl)
             .append("/api/v2/events/dataexport/events/audit");
 
-        if (this.rLookbackPeriod != null) {
-            Duration lookback = runContext.render(this.rLookbackPeriod).as(Duration.class).orElse(null);
-            if (lookback != null) {
-                long startEpoch = Instant.now().minus(lookback).getEpochSecond();
+        if (this.lookbackPeriod != null) {
+            Duration rLookbackPeriod = runContext.render(this.lookbackPeriod).as(Duration.class).orElse(null);
+            if (rLookbackPeriod != null) {
+                long startEpoch = Instant.now().minus(rLookbackPeriod).getEpochSecond();
                 urlBuilder.append("?starttime=").append(startEpoch);
             }
         }
@@ -95,7 +95,7 @@ public class AuditLogs extends Task implements RunnableTask<AuditLogs.Output> {
             var httpRequest = HttpRequest.builder()
                 .uri(URI.create(url))
                 .method("GET")
-                .addHeader("Netskope-Api-Token", apiTokenVal)
+                .addHeader("Netskope-Api-Token", rApiToken)
                 .build();
             HttpResponse<String> response = client.request(httpRequest, String.class);
             if (response.getStatus().getCode() >= 400) {
