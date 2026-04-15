@@ -6,6 +6,7 @@ import io.kestra.core.http.client.HttpClient;
 import io.kestra.core.http.client.configurations.HttpConfiguration;
 import io.kestra.core.models.annotations.Example;
 import io.kestra.core.models.annotations.Plugin;
+import io.kestra.core.models.annotations.PluginProperty;
 import io.kestra.core.models.property.Property;
 import io.kestra.core.models.tasks.RunnableTask;
 import io.kestra.core.models.tasks.Task;
@@ -43,11 +44,11 @@ import java.util.Map;
                 tasks:
                   - id: add_member
                     type: io.kestra.plugin.netskope.scim.PatchGroup
-                    baseUrl: "https://{{ secret('NETSKOPE_TENANT') }}.goskope.com"
-                    scimToken: "{{ secret('NETSKOPE_SCIM_TOKEN') }}"
-                    groupId: "{{ inputs.group_id }}"
-                    operation: ADD
-                    memberEmail: "user@example.com"
+                    rBaseUrl: "https://{{ secret('NETSKOPE_TENANT') }}.goskope.com"
+                    rScimToken: "{{ secret('NETSKOPE_SCIM_TOKEN') }}"
+                    rGroupId: "{{ inputs.group_id }}"
+                    rOperation: ADD
+                    rMemberEmail: "user@example.com"
                 """
         )
     }
@@ -56,31 +57,36 @@ public class PatchGroup extends Task implements RunnableTask<PatchGroup.Output> 
 
     @Schema(title = "The base URL of the Netskope tenant", description = "e.g. https://tenant.goskope.com")
     @NotNull
-    private Property<String> baseUrl;
+    @PluginProperty(group = "connection")
+    private Property<String> rBaseUrl;
 
     @Schema(title = "The SCIM Bearer token for authentication")
     @NotNull
-    private Property<String> scimToken;
+    @PluginProperty(group = "connection")
+    private Property<String> rScimToken;
 
     @Schema(title = "The SCIM group ID to update")
     @NotNull
-    private Property<String> groupId;
+    @PluginProperty(group = "main")
+    private Property<String> rGroupId;
 
     @Schema(title = "The operation to perform on group membership", description = "Must be 'ADD' or 'REMOVE'")
     @NotNull
-    private Property<String> operation;
+    @PluginProperty(group = "main")
+    private Property<String> rOperation;
 
     @Schema(title = "The email address of the member to add or remove")
     @NotNull
-    private Property<String> memberEmail;
+    @PluginProperty(group = "main")
+    private Property<String> rMemberEmail;
 
     @Override
     public Output run(RunContext runContext) throws Exception {
-        String baseUrlVal = runContext.render(this.baseUrl).as(String.class).orElseThrow();
-        String scimTokenVal = runContext.render(this.scimToken).as(String.class).orElseThrow();
-        String groupIdVal = runContext.render(this.groupId).as(String.class).orElseThrow();
-        String operationVal = runContext.render(this.operation).as(String.class).orElseThrow();
-        String memberEmailVal = runContext.render(this.memberEmail).as(String.class).orElseThrow();
+        String baseUrlVal = runContext.render(this.rBaseUrl).as(String.class).orElseThrow();
+        String scimTokenVal = runContext.render(this.rScimToken).as(String.class).orElseThrow();
+        String groupIdVal = runContext.render(this.rGroupId).as(String.class).orElseThrow();
+        String operationVal = runContext.render(this.rOperation).as(String.class).orElseThrow();
+        String memberEmailVal = runContext.render(this.rMemberEmail).as(String.class).orElseThrow();
 
         String url = baseUrlVal + "/scim/Groups/" + groupIdVal;
 

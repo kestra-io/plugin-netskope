@@ -6,6 +6,7 @@ import io.kestra.core.http.client.HttpClient;
 import io.kestra.core.http.client.configurations.HttpConfiguration;
 import io.kestra.core.models.annotations.Example;
 import io.kestra.core.models.annotations.Plugin;
+import io.kestra.core.models.annotations.PluginProperty;
 import io.kestra.core.models.property.Property;
 import io.kestra.core.models.tasks.RunnableTask;
 import io.kestra.core.models.tasks.Task;
@@ -43,10 +44,10 @@ import java.util.Map;
                 tasks:
                   - id: deactivate_user
                     type: io.kestra.plugin.netskope.scim.ManageUser
-                    baseUrl: "https://{{ secret('NETSKOPE_TENANT') }}.goskope.com"
-                    scimToken: "{{ secret('NETSKOPE_SCIM_TOKEN') }}"
-                    userId: "{{ inputs.user_id }}"
-                    active: false
+                    rBaseUrl: "https://{{ secret('NETSKOPE_TENANT') }}.goskope.com"
+                    rScimToken: "{{ secret('NETSKOPE_SCIM_TOKEN') }}"
+                    rUserId: "{{ inputs.user_id }}"
+                    rActive: false
                 """
         )
     }
@@ -55,26 +56,30 @@ public class ManageUser extends Task implements RunnableTask<ManageUser.Output> 
 
     @Schema(title = "The base URL of the Netskope tenant", description = "e.g. https://tenant.goskope.com")
     @NotNull
-    private Property<String> baseUrl;
+    @PluginProperty(group = "connection")
+    private Property<String> rBaseUrl;
 
     @Schema(title = "The SCIM Bearer token for authentication")
     @NotNull
-    private Property<String> scimToken;
+    @PluginProperty(group = "connection")
+    private Property<String> rScimToken;
 
     @Schema(title = "The SCIM user ID to update")
     @NotNull
-    private Property<String> userId;
+    @PluginProperty(group = "main")
+    private Property<String> rUserId;
 
     @Schema(title = "Whether the user should be active or inactive")
     @NotNull
-    private Property<Boolean> active;
+    @PluginProperty(group = "main")
+    private Property<Boolean> rActive;
 
     @Override
     public Output run(RunContext runContext) throws Exception {
-        String baseUrlVal = runContext.render(this.baseUrl).as(String.class).orElseThrow();
-        String scimTokenVal = runContext.render(this.scimToken).as(String.class).orElseThrow();
-        String userIdVal = runContext.render(this.userId).as(String.class).orElseThrow();
-        boolean activeVal = runContext.render(this.active).as(Boolean.class).orElseThrow();
+        String baseUrlVal = runContext.render(this.rBaseUrl).as(String.class).orElseThrow();
+        String scimTokenVal = runContext.render(this.rScimToken).as(String.class).orElseThrow();
+        String userIdVal = runContext.render(this.rUserId).as(String.class).orElseThrow();
+        boolean activeVal = runContext.render(this.rActive).as(Boolean.class).orElseThrow();
 
         String url = baseUrlVal + "/scim/Users/" + userIdVal;
 

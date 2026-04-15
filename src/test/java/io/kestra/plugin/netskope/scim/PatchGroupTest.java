@@ -23,11 +23,11 @@ class PatchGroupTest {
     @Test
     void run() throws Exception {
         var task = PatchGroup.builder()
-            .baseUrl(Property.ofExpression("{{ envs.NETSKOPE_BASE_URL }}"))
-            .scimToken(Property.ofExpression("{{ envs.NETSKOPE_SCIM_TOKEN }}"))
-            .groupId(Property.ofExpression("{{ envs.NETSKOPE_SCIM_GROUP_ID }}"))
-            .operation(Property.ofValue("ADD"))
-            .memberEmail(Property.ofValue("test-user@example.com"))
+            .rBaseUrl(Property.ofExpression("{{ envs.NETSKOPE_BASE_URL }}"))
+            .rScimToken(Property.ofExpression("{{ envs.NETSKOPE_SCIM_TOKEN }}"))
+            .rGroupId(Property.ofExpression("{{ envs.NETSKOPE_SCIM_GROUP_ID }}"))
+            .rOperation(Property.ofValue("ADD"))
+            .rMemberEmail(Property.ofValue("test-user@example.com"))
             .build();
         var ctx = runContextFactory.of(Map.of());
         var output = task.run(ctx);

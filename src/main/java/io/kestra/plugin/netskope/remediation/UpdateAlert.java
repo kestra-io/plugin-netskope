@@ -6,6 +6,7 @@ import io.kestra.core.http.client.HttpClient;
 import io.kestra.core.http.client.configurations.HttpConfiguration;
 import io.kestra.core.models.annotations.Example;
 import io.kestra.core.models.annotations.Plugin;
+import io.kestra.core.models.annotations.PluginProperty;
 import io.kestra.core.models.property.Property;
 import io.kestra.core.models.tasks.RunnableTask;
 import io.kestra.core.models.tasks.Task;
@@ -43,11 +44,11 @@ import java.util.Map;
                 tasks:
                   - id: ack_alert
                     type: io.kestra.plugin.netskope.remediation.UpdateAlert
-                    baseUrl: "https://{{ secret('NETSKOPE_TENANT') }}.goskope.com"
-                    apiToken: "{{ secret('NETSKOPE_V2_TOKEN') }}"
-                    alertId: "{{ inputs.alert_id }}"
-                    status: acknowledged
-                    note: "Reviewed and acknowledged by SOC team"
+                    rBaseUrl: "https://{{ secret('NETSKOPE_TENANT') }}.goskope.com"
+                    rApiToken: "{{ secret('NETSKOPE_V2_TOKEN') }}"
+                    rAlertId: "{{ inputs.alert_id }}"
+                    rStatus: acknowledged
+                    rNote: "Reviewed and acknowledged by SOC team"
                 """
         )
     }
@@ -56,36 +57,41 @@ public class UpdateAlert extends Task implements RunnableTask<UpdateAlert.Output
 
     @Schema(title = "The base URL of the Netskope tenant", description = "e.g. https://tenant.goskope.com")
     @NotNull
-    private Property<String> baseUrl;
+    @PluginProperty(group = "connection")
+    private Property<String> rBaseUrl;
 
     @Schema(title = "The Netskope v2 API token")
     @NotNull
-    private Property<String> apiToken;
+    @PluginProperty(group = "connection")
+    private Property<String> rApiToken;
 
     @Schema(title = "The ID of the alert to update")
     @NotNull
-    private Property<String> alertId;
+    @PluginProperty(group = "main")
+    private Property<String> rAlertId;
 
     @Schema(title = "The new status for the alert", description = "Must be 'acknowledged' or 'dismissed'")
     @NotNull
-    private Property<String> status;
+    @PluginProperty(group = "main")
+    private Property<String> rStatus;
 
     @Schema(title = "Optional note to attach to the alert update")
-    private Property<String> note;
+    @PluginProperty(group = "advanced")
+    private Property<String> rNote;
 
     @Override
     public Output run(RunContext runContext) throws Exception {
-        String baseUrlVal = runContext.render(this.baseUrl).as(String.class).orElseThrow();
-        String apiTokenVal = runContext.render(this.apiToken).as(String.class).orElseThrow();
-        String alertIdVal = runContext.render(this.alertId).as(String.class).orElseThrow();
-        String statusVal = runContext.render(this.status).as(String.class).orElseThrow();
+        String baseUrlVal = runContext.render(this.rBaseUrl).as(String.class).orElseThrow();
+        String apiTokenVal = runContext.render(this.rApiToken).as(String.class).orElseThrow();
+        String alertIdVal = runContext.render(this.rAlertId).as(String.class).orElseThrow();
+        String statusVal = runContext.render(this.rStatus).as(String.class).orElseThrow();
 
         String url = baseUrlVal + "/api/v2/events/alerts/" + alertIdVal;
 
         Map<String, Object> requestBody = new LinkedHashMap<>();
         requestBody.put("status", statusVal);
-        if (this.note != null) {
-            String noteVal = runContext.render(this.note).as(String.class).orElse(null);
+        if (this.rNote != null) {
+            String noteVal = runContext.render(this.rNote).as(String.class).orElse(null);
             if (noteVal != null) {
                 requestBody.put("note", noteVal);
             }

@@ -23,9 +23,9 @@ class GetAlertsTest {
     @Test
     void run() throws Exception {
         var task = GetAlerts.builder()
-            .baseUrl(Property.ofExpression("{{ envs.NETSKOPE_BASE_URL }}"))
-            .apiToken(Property.ofExpression("{{ envs.NETSKOPE_API_TOKEN }}"))
-            .alertType(Property.ofValue("malware"))
+            .rBaseUrl(Property.ofExpression("{{ envs.NETSKOPE_BASE_URL }}"))
+            .rApiToken(Property.ofExpression("{{ envs.NETSKOPE_API_TOKEN }}"))
+            .rAlertType(Property.ofValue("malware"))
             .build();
         var ctx = runContextFactory.of(Map.of());
         var output = task.run(ctx);

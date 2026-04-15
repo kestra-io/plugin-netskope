@@ -7,6 +7,7 @@ import io.kestra.core.http.client.HttpClient;
 import io.kestra.core.http.client.configurations.HttpConfiguration;
 import io.kestra.core.models.annotations.Example;
 import io.kestra.core.models.annotations.Plugin;
+import io.kestra.core.models.annotations.PluginProperty;
 import io.kestra.core.models.property.Property;
 import io.kestra.core.models.tasks.RunnableTask;
 import io.kestra.core.models.tasks.Task;
@@ -47,9 +48,9 @@ import java.util.Map;
                 tasks:
                   - id: fetch_events
                     type: io.kestra.plugin.netskope.events.GetEvents
-                    baseUrl: "https://{{ secret('NETSKOPE_TENANT') }}.goskope.com"
-                    apiToken: "{{ secret('NETSKOPE_V2_TOKEN') }}"
-                    eventType: application
+                    rBaseUrl: "https://{{ secret('NETSKOPE_TENANT') }}.goskope.com"
+                    rApiToken: "{{ secret('NETSKOPE_V2_TOKEN') }}"
+                    rEventType: application
                 """
         )
     }
@@ -58,32 +59,36 @@ public class GetEvents extends Task implements RunnableTask<GetEvents.Output> {
 
     @Schema(title = "The base URL of the Netskope tenant", description = "e.g. https://tenant.goskope.com")
     @NotNull
-    private Property<String> baseUrl;
+    @PluginProperty(group = "connection")
+    private Property<String> rBaseUrl;
 
     @Schema(title = "The Netskope v2 API token")
     @NotNull
-    private Property<String> apiToken;
+    @PluginProperty(group = "connection")
+    private Property<String> rApiToken;
 
     @Schema(title = "The event type to retrieve", description = "e.g. application, network, page, infrastructure, audit, etc.")
-    private Property<String> eventType;
+    @PluginProperty(group = "main")
+    private Property<String> rEventType;
 
     @Schema(title = "Optional NRSQL query filter", description = "Added as the `query` query parameter")
-    private Property<String> query;
+    @PluginProperty(group = "processing")
+    private Property<String> rQuery;
 
     @Override
     public Output run(RunContext runContext) throws Exception {
-        String baseUrlVal = runContext.render(this.baseUrl).as(String.class).orElseThrow();
-        String apiTokenVal = runContext.render(this.apiToken).as(String.class).orElseThrow();
-        String eventTypeVal = this.eventType != null
-            ? runContext.render(this.eventType).as(String.class).orElse("application")
+        String baseUrlVal = runContext.render(this.rBaseUrl).as(String.class).orElseThrow();
+        String apiTokenVal = runContext.render(this.rApiToken).as(String.class).orElseThrow();
+        String eventTypeVal = this.rEventType != null
+            ? runContext.render(this.rEventType).as(String.class).orElse("application")
             : "application";
 
         StringBuilder urlBuilder = new StringBuilder(baseUrlVal)
             .append("/api/v2/events/dataexport/events/")
             .append(eventTypeVal);
 
-        if (this.query != null) {
-            String queryVal = runContext.render(this.query).as(String.class).orElse(null);
+        if (this.rQuery != null) {
+            String queryVal = runContext.render(this.rQuery).as(String.class).orElse(null);
             if (queryVal != null && !queryVal.isBlank()) {
                 urlBuilder.append("?query=").append(java.net.URLEncoder.encode(queryVal, java.nio.charset.StandardCharsets.UTF_8));
             }

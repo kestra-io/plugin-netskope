@@ -23,9 +23,9 @@ class GetEventsTest {
     @Test
     void run() throws Exception {
         var task = GetEvents.builder()
-            .baseUrl(Property.ofExpression("{{ envs.NETSKOPE_BASE_URL }}"))
-            .apiToken(Property.ofExpression("{{ envs.NETSKOPE_API_TOKEN }}"))
-            .eventType(Property.ofValue("application"))
+            .rBaseUrl(Property.ofExpression("{{ envs.NETSKOPE_BASE_URL }}"))
+            .rApiToken(Property.ofExpression("{{ envs.NETSKOPE_API_TOKEN }}"))
+            .rEventType(Property.ofValue("application"))
             .build();
         var ctx = runContextFactory.of(Map.of());
         var output = task.run(ctx);

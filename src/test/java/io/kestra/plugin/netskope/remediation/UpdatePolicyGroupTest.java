@@ -23,11 +23,11 @@ class UpdatePolicyGroupTest {
     @Test
     void run() throws Exception {
         var task = UpdatePolicyGroup.builder()
-            .baseUrl(Property.ofExpression("{{ envs.NETSKOPE_BASE_URL }}"))
-            .apiToken(Property.ofExpression("{{ envs.NETSKOPE_API_TOKEN }}"))
-            .policyGroupId(Property.ofExpression("{{ envs.NETSKOPE_POLICY_GROUP_ID }}"))
-            .operation(Property.ofValue("ADD"))
-            .entity(Property.ofValue("test-block.example.com"))
+            .rBaseUrl(Property.ofExpression("{{ envs.NETSKOPE_BASE_URL }}"))
+            .rApiToken(Property.ofExpression("{{ envs.NETSKOPE_API_TOKEN }}"))
+            .rPolicyGroupId(Property.ofExpression("{{ envs.NETSKOPE_POLICY_GROUP_ID }}"))
+            .rOperation(Property.ofValue("ADD"))
+            .rEntity(Property.ofValue("test-block.example.com"))
             .build();
         var ctx = runContextFactory.of(Map.of());
         var output = task.run(ctx);
