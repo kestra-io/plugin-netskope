@@ -1,7 +1,7 @@
 @PluginSubGroup(
     title = "Netskope Security Remediation",
     description = "Action-oriented tasks to respond to threats in Netskope Security Cloud.",
-    categories = PluginSubGroup.PluginCategory.TOOL
+    categories = { PluginSubGroup.PluginCategory.CLOUD, PluginSubGroup.PluginCategory.INFRASTRUCTURE }
 )
 package io.kestra.plugin.netskope.remediation;
 
