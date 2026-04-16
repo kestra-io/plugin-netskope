@@ -10,11 +10,10 @@ import io.kestra.core.models.annotations.Plugin;
 import io.kestra.core.models.annotations.PluginProperty;
 import io.kestra.core.models.property.Property;
 import io.kestra.core.models.tasks.RunnableTask;
-import io.kestra.core.models.tasks.Task;
 import io.kestra.core.runners.RunContext;
+import io.kestra.plugin.netskope.AbstractNetskopeApiTask;
 import io.kestra.core.serializers.JacksonMapper;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Builder;
 import lombok.Getter;
@@ -56,17 +55,7 @@ import java.util.Map;
         )
     }
 )
-public class GetAlerts extends Task implements RunnableTask<GetAlerts.Output> {
-
-    @Schema(title = "The base URL of the Netskope tenant", description = "e.g. https://tenant.goskope.com")
-    @NotNull
-    @PluginProperty(group = "main")
-    private Property<String> baseUrl;
-
-    @Schema(title = "The Netskope v2 API token")
-    @NotNull
-    @PluginProperty(group = "main")
-    private Property<String> apiToken;
+public class GetAlerts extends AbstractNetskopeApiTask implements RunnableTask<GetAlerts.Output> {
 
     @Schema(title = "The alert type to retrieve", description = "e.g. malware, dlp, policy, compromised-credentials, etc.")
     @PluginProperty(group = "main")

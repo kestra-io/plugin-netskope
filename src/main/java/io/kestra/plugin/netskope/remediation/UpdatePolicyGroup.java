@@ -9,8 +9,8 @@ import io.kestra.core.models.annotations.Plugin;
 import io.kestra.core.models.annotations.PluginProperty;
 import io.kestra.core.models.property.Property;
 import io.kestra.core.models.tasks.RunnableTask;
-import io.kestra.core.models.tasks.Task;
 import io.kestra.core.runners.RunContext;
+import io.kestra.plugin.netskope.AbstractNetskopeApiTask;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -52,17 +52,7 @@ import java.util.Map;
         )
     }
 )
-public class UpdatePolicyGroup extends Task implements RunnableTask<UpdatePolicyGroup.Output> {
-
-    @Schema(title = "The base URL of the Netskope tenant", description = "e.g. https://tenant.goskope.com")
-    @NotNull
-    @PluginProperty(group = "main")
-    private Property<String> baseUrl;
-
-    @Schema(title = "The Netskope v2 API token")
-    @NotNull
-    @PluginProperty(group = "main")
-    private Property<String> apiToken;
+public class UpdatePolicyGroup extends AbstractNetskopeApiTask implements RunnableTask<UpdatePolicyGroup.Output> {
 
     @Schema(title = "The ID of the URL list policy group to update")
     @NotNull

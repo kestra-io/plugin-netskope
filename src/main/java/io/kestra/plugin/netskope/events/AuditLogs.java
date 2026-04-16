@@ -10,11 +10,10 @@ import io.kestra.core.models.annotations.Plugin;
 import io.kestra.core.models.annotations.PluginProperty;
 import io.kestra.core.models.property.Property;
 import io.kestra.core.models.tasks.RunnableTask;
-import io.kestra.core.models.tasks.Task;
 import io.kestra.core.runners.RunContext;
+import io.kestra.plugin.netskope.AbstractNetskopeApiTask;
 import io.kestra.core.serializers.JacksonMapper;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -57,17 +56,7 @@ import java.util.Map;
         )
     }
 )
-public class AuditLogs extends Task implements RunnableTask<AuditLogs.Output> {
-
-    @Schema(title = "The base URL of the Netskope tenant", description = "e.g. https://tenant.goskope.com")
-    @NotNull
-    @PluginProperty(group = "main")
-    private Property<String> baseUrl;
-
-    @Schema(title = "The Netskope v2 API token")
-    @NotNull
-    @PluginProperty(group = "main")
-    private Property<String> apiToken;
+public class AuditLogs extends AbstractNetskopeApiTask implements RunnableTask<AuditLogs.Output> {
 
     @Schema(title = "Lookback period for audit logs", description = "When set, appends ?starttime=<epoch> computed as Instant.now().minus(lookbackPeriod). ISO-8601 duration e.g. PT24H")
     @PluginProperty(group = "processing")
