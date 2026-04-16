@@ -1,0 +1,8 @@
+group: io.kestra.plugin.netskope
+name: "remediation"
+title: "Remediation"
+description: "Action-oriented tasks for automated security response in Netskope Security Cloud, suitable for SOAR workflows."
+body: ""
+videos: []
+createdBy: "Kestra Core Team"
+managedBy: "Kestra Core Team"
