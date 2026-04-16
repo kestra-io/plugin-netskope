@@ -1,6 +1,6 @@
-group: io.kestra.plugin.netskope
+group: io.kestra.plugin.netskope.events
 name: "events"
-title: "Events"
+title: "Netskope Events"
 description: "Tasks to fetch alerts, events, and audit logs from Netskope Security Cloud via the REST API v2 Data Export endpoint."
 body: ""
 videos: []

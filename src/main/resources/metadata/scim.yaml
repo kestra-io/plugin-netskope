@@ -1,6 +1,6 @@
-group: io.kestra.plugin.netskope
+group: io.kestra.plugin.netskope.scim
 name: "scim"
-title: "SCIM"
+title: "Netskope SCIM"
 description: "Tasks to manage user and group identity lifecycle in Netskope Security Cloud via SCIM 2.0."
 body: ""
 videos: []
