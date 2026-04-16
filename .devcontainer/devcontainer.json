@@ -1,10 +1,10 @@
 {
-  "name": "plugin-template",
+  "name": "plugin-netskope",
   "build": {
     "context": ".",
     "dockerfile": "Dockerfile"
   },
-  "workspaceFolder": "/workspaces/plugin-template",
+  "workspaceFolder": "/workspaces/plugin-netskope",
   "forwardPorts": [8080],
   "customizations": {
     "vscode": {
