@@ -25,6 +25,6 @@ public abstract class AbstractNetskopeApiTask extends Task {
 
     @Schema(title = "The Netskope v2 API token")
     @NotNull
-    @PluginProperty(group = "main")
+    @PluginProperty(secret = true, group = "main")
     protected Property<String> apiToken;
 }
