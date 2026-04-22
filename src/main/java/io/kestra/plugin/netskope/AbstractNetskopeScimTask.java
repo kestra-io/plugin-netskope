@@ -25,6 +25,6 @@ public abstract class AbstractNetskopeScimTask extends Task {
 
     @Schema(title = "The SCIM Bearer token for authentication")
     @NotNull
-    @PluginProperty(group = "main")
+    @PluginProperty(secret = true, group = "main")
     protected Property<String> scimToken;
 }
