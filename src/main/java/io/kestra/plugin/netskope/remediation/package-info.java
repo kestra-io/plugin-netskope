@@ -1,5 +1,5 @@
 @PluginSubGroup(
-    title = "Netskope Security Remediation",
+    title = "Netskope Remediation",
     description = "Action-oriented tasks to respond to threats in Netskope Security Cloud.",
     categories = { PluginSubGroup.PluginCategory.CLOUD, PluginSubGroup.PluginCategory.INFRASTRUCTURE }
 )

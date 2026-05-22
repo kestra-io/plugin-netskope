@@ -1,5 +1,5 @@
 @PluginSubGroup(
-    title = "Netskope Identity & SCIM",
+    title = "Netskope SCIM",
     description = "Manage users and groups in Netskope Security Cloud via SCIM 2.0.",
     categories = { PluginSubGroup.PluginCategory.CLOUD, PluginSubGroup.PluginCategory.INFRASTRUCTURE }
 )
