@@ -1,5 +1,5 @@
 @PluginSubGroup(
-    title = "Netskope Events & Alerts",
+    title = "Netskope Events",
     description = "Ingest events and alerts from Netskope Security Cloud using the REST API v2 Data Export iterators.",
     categories = { PluginSubGroup.PluginCategory.CLOUD, PluginSubGroup.PluginCategory.INFRASTRUCTURE }
 )
