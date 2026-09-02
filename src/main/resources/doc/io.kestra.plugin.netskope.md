@@ -10,7 +10,7 @@ Netskope tasks use one of two auth bases:
 
 **SCIM tasks** (`scim.*`): set `baseUrl` (required) and `scimToken` (your SCIM 2.0 Bearer token, required).
 
-Store secrets in [secrets](https://kestra.io/docs/concepts/secret) and apply connection properties globally with [plugin defaults](https://kestra.io/docs/workflow-components/plugin-defaults).
+Store secrets in [secrets](https://kestra.io/docs/concepts/secret) and set connection properties on each task.
 
 ## Tasks
 
